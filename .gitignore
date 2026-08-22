@@ -1,7 +1,10 @@
 node_modules/
 target/
 dist/
+build/
+.env*
 *.dpapi
 *.vault
 data/
-.env*
+coverage/
+secrets/
