@@ -13,40 +13,22 @@ pub fn wipe(buf: &mut [u8]) {
 }
 
 pub fn backend_name() -> &'static str {
-    if env::var("AJ_MASTER_KEY").ok().filter(|v| v.len() == 64).is_some() {
-        return "env";
-    }
-    if cfg!(windows) {
-        return "dpapi";
-    }
-    if secret_tool_available() {
-        return "libsecret";
-    }
-    "env"
+    "keyring"
 }
 
-fn secret_tool_available() -> bool {
-    Command::new("secret-tool")
-        .arg("--help")
-        .output()
-        .map(|o| o.status.success() || !o.stdout.is_empty() || !o.stderr.is_empty())
-        .unwrap_or(false)
-}
-
-/// CI / Linux fallback: read hex from AJ_MASTER_KEY only. Refuse vault-adjacent files.
+/// Fallback for loading master hex.
 pub fn load_master_hex() -> Result<Vec<u8>, String> {
-    if let Ok(hex) = env::var("AJ_MASTER_KEY") {
-        if hex.len() == 64 && hex.chars().all(|c| c.is_ascii_hexdigit()) {
-            return hex::decode_simple(&hex);
-        }
+    if let Ok(bytes) = secret_lookup() {
+        return Ok(bytes);
     }
-    if cfg!(windows) {
+    #[cfg(windows)]
+    {
         return dpapi::load_or_create();
     }
-    if secret_tool_available() {
-        return Err("libsecret: use secret_store() / secret_lookup()".into());
+    #[cfg(not(windows))]
+    {
+        Err("no supported master key backend available".into())
     }
-    Err("no master key in environment; set AJ_MASTER_KEY for CI".into())
 }
 
 pub fn refuse_if_beside_vault(path: &str) -> Result<(), String> {
@@ -57,6 +39,15 @@ pub fn refuse_if_beside_vault(path: &str) -> Result<(), String> {
 }
 
 mod hex {
+    pub fn encode_simple(bytes: &[u8]) -> String {
+        let mut out = String::with_capacity(bytes.len() * 2);
+        for &b in bytes {
+            out.push(char::from_digit((b >> 4) as u32, 16).unwrap());
+            out.push(char::from_digit((b & 0xf) as u32, 16).unwrap());
+        }
+        out
+    }
+
     pub fn decode_simple(hex: &str) -> Result<Vec<u8>, String> {
         if hex.len() % 2 != 0 {
             return Err("odd hex".into());
@@ -87,96 +78,71 @@ pub fn secret_store(label: &str, hex: &str) -> Result<(), String> {
     if hex.len() != 64 || !hex.chars().all(|c| c.is_ascii_hexdigit()) {
         return Err("secret_store: expected 64 hex chars".into());
     }
-    let out = Command::new("secret-tool")
-        .args(["store", "--label", label, "service", "aljwharah", "account", "master"])
-        .stdin(std::process::Stdio::piped())
-        .output()
-        .map_err(|e| e.to_string())?;
-    if !out.status.success() {
-        return Err("secret-tool store failed".into());
-    }
+    let entry = keyring::Entry::new("aljwharah", "master").map_err(|e| e.to_string())?;
+    entry.set_password(hex).map_err(|e| e.to_string())?;
     Ok(())
 }
 
 pub fn secret_lookup() -> Result<Vec<u8>, String> {
-    let out = Command::new("secret-tool")
-        .args(["lookup", "service", "aljwharah", "account", "master"])
-        .output()
-        .map_err(|e| e.to_string())?;
-    if !out.status.success() {
-        return Err("secret-tool lookup failed".into());
-    }
-    let hex = String::from_utf8_lossy(&out.stdout).trim().to_string();
-    hex::decode_simple(&hex)
+    let entry = keyring::Entry::new("aljwharah", "master").map_err(|e| e.to_string())?;
+    let hex = entry.get_password().map_err(|e| e.to_string())?;
+    hex::decode_simple(hex.trim())
 }
 
 pub fn get_secret(name: &str) -> Result<Option<String>, String> {
-    #[cfg(windows)]
-    {
-        let dir = dpapi::store_path().join("secrets");
-        let path = dir.join(format!("{}.dpapi", name.replace(|c: char| !c.is_alphanumeric(), "_")));
-        if path.exists() {
-            let blob = fs::read(&path).map_err(|e| e.to_string())?;
-            let decrypted = dpapi::unprotect(&blob)?;
-            return Ok(Some(String::from_utf8_lossy(&decrypted).to_string()));
-        }
+    let entry = keyring::Entry::new("aljwharah", name).map_err(|e| e.to_string())?;
+    match entry.get_password() {
+        Ok(pw) => Ok(Some(pw)),
+        Err(keyring::Error::NoEntry) => Ok(None),
+        Err(e) => Err(e.to_string()),
     }
-    #[cfg(not(windows))]
-    {
-        if secret_tool_available() {
-            if let Ok(bytes) = secret_lookup() {
-                return Ok(Some(String::from_utf8_lossy(&bytes).to_string()));
-            }
-        }
-    }
-    Ok(None)
 }
 
 pub fn set_secret(name: &str, value: &str) -> Result<bool, String> {
-    #[cfg(windows)]
-    {
-        let dir = dpapi::store_path().join("secrets");
-        fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-        let path = dir.join(format!("{}.dpapi", name.replace(|c: char| !c.is_alphanumeric(), "_")));
-        let blob = dpapi::protect(value.as_bytes())?;
-        fs::write(&path, &blob).map_err(|e| e.to_string())?;
-        return Ok(true);
-    }
-    #[cfg(not(windows))]
-    {
-        let _ = (name, value);
-        Ok(true)
-    }
+    let entry = keyring::Entry::new("aljwharah", name).map_err(|e| e.to_string())?;
+    entry.set_password(value).map_err(|e| e.to_string())?;
+    Ok(true)
 }
 
 pub fn delete_secret(name: &str) -> Result<bool, String> {
+    let entry = keyring::Entry::new("aljwharah", name).map_err(|e| e.to_string())?;
+    match entry.delete_password() {
+        Ok(_) => Ok(true),
+        Err(keyring::Error::NoEntry) => Ok(false),
+        Err(e) => Err(e.to_string()),
+    }
+}
+
+pub fn migrate_dpapi() {
     #[cfg(windows)]
     {
-        let dir = dpapi::store_path().join("secrets");
-        let path = dir.join(format!("{}.dpapi", name.replace(|c: char| !c.is_alphanumeric(), "_")));
-        if path.exists() {
-            fs::remove_file(&path).map_err(|e| e.to_string())?;
-            return Ok(true);
+        if let Ok(paths) = fs::read_dir(dpapi::store_path().join("secrets")) {
+            for path in paths.flatten() {
+                if path.path().extension().and_then(|s| s.to_str()) == Some("dpapi") {
+                    if let Ok(blob) = fs::read(path.path()) {
+                        if let Ok(decrypted) = dpapi::unprotect(&blob) {
+                            let name = path.file_stem().unwrap().to_string_lossy();
+                            let _ = set_secret(&name, &String::from_utf8_lossy(&decrypted));
+                            let _ = fs::remove_file(path.path());
+                        }
+                    }
+                }
+            }
+        }
+        
+        let master_path = dpapi::store_path().join("master.dpapi");
+        if master_path.exists() {
+            if let Ok(blob) = fs::read(&master_path) {
+                if let Ok(decrypted) = dpapi::unprotect(&blob) {
+                    let hex_string = hex::encode_simple(&decrypted);
+                    let _ = secret_store("master", &hex_string);
+                    let _ = fs::remove_file(&master_path);
+                }
+            }
         }
     }
-    #[cfg(not(windows))]
-    {
-        let _ = name;
-    }
-    Ok(false)
 }
 
-#[allow(dead_code)]
-pub fn shm_path(operator: &str) -> PathBuf {
-    let mut p = PathBuf::from("/dev/shm/aj-keyring");
-    p.push(operator);
-    p
-}
-
-#[allow(dead_code)]
-pub fn drop_file(path: &PathBuf) {
-    let _ = fs::remove_file(path);
-}
 
 /// Windows DPAPI — compiled on Windows, documented here for the Linux host.
 #[cfg(windows)]

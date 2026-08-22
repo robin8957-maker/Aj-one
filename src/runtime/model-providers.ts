@@ -80,9 +80,11 @@ export interface ModelProvider {
   complete(req: ProviderRequest): Promise<ProviderResponse>;
 }
 
-async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+export const clock = {
+  sleep: async (ms: number): Promise<void> => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+};
 
 function calculateCostEstimate(providerId: string, model: string, usage: TokenUsage): number {
   // Approximate pricing per million tokens
@@ -204,7 +206,7 @@ export class AnthropicProvider implements ModelProvider {
           const isRetryable = res.status === 429 || res.status >= 500;
           if (isRetryable && attempt < maxRetries) {
             attempt++;
-            await sleep(1000 * Math.pow(2, attempt - 1));
+            await clock.sleep(1000 * Math.pow(2, attempt - 1));
             continue;
           }
           return {
@@ -277,7 +279,7 @@ export class AnthropicProvider implements ModelProvider {
         const isTimeout = lastError.name === "AbortError" || lastError.name === "TimeoutError";
         if (!isTimeout && attempt < maxRetries) {
           attempt++;
-          await sleep(1000 * Math.pow(2, attempt - 1));
+          await clock.sleep(1000 * Math.pow(2, attempt - 1));
           continue;
         }
         break;
@@ -371,7 +373,7 @@ export class OpenAICompatibleProvider implements ModelProvider {
           const isRetryable = res.status === 429 || res.status >= 500;
           if (isRetryable && attempt < maxRetries) {
             attempt++;
-            await sleep(1000 * Math.pow(2, attempt - 1));
+            await clock.sleep(1000 * Math.pow(2, attempt - 1));
             continue;
           }
           return {
@@ -456,7 +458,7 @@ export class OpenAICompatibleProvider implements ModelProvider {
         const isTimeout = lastError.name === "AbortError" || lastError.name === "TimeoutError";
         if (!isTimeout && attempt < maxRetries) {
           attempt++;
-          await sleep(1000 * Math.pow(2, attempt - 1));
+          await clock.sleep(1000 * Math.pow(2, attempt - 1));
           continue;
         }
         break;
@@ -524,7 +526,7 @@ export class OllamaLocalProvider implements ModelProvider {
           const isRetryable = res.status === 429 || res.status >= 500;
           if (isRetryable && attempt < maxRetries) {
             attempt++;
-            await sleep(1000 * Math.pow(2, attempt - 1));
+            await clock.sleep(1000 * Math.pow(2, attempt - 1));
             continue;
           }
           return {
@@ -585,7 +587,7 @@ export class OllamaLocalProvider implements ModelProvider {
         const isTimeout = lastError.name === "AbortError" || lastError.name === "TimeoutError";
         if (!isTimeout && attempt < maxRetries) {
           attempt++;
-          await sleep(1000 * Math.pow(2, attempt - 1));
+          await clock.sleep(1000 * Math.pow(2, attempt - 1));
           continue;
         }
         break;

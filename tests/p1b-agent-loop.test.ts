@@ -21,13 +21,25 @@ import {
   OllamaLocalProvider,
   validateModelId,
   verifyProvider,
+  clock,
   type ModelProvider,
   type ProviderRequest,
   type ProviderResponse,
 } from "../src/runtime/model-providers.ts";
+
+clock.sleep = async () => {}; // mock sleep in tests
 import { redactSecrets, redactObject, keychain, type KeychainService } from "../src/runtime/keychain.ts";
 import { AJ_ERR } from "../src/runtime/errors.ts";
 import { buildEnforcedContext } from "../src/runtime/context-engine.ts";
+import "../src/daemon/store.ts";
+import "../src/runtime/sandbox.ts";
+import "../src/runtime/graph.ts";
+import "../src/runtime/lsp.ts";
+import "../src/runtime/code-graph.ts";
+import "../src/runtime/ledger-ipc.ts";
+import "../src/protocol/connections.ts";
+import "../src/protocol/work.ts";
+import "../src/protocol/station.ts";
 import { inspectRepository } from "../src/runtime/repository.ts";
 import { graphFromRepository } from "../src/runtime/code-graph.ts";
 import { executeProjectTests } from "../src/runtime/coder.ts";

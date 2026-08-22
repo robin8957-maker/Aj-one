@@ -100,6 +100,12 @@ fn delete_secret(name: String) -> Result<bool, String> {
 }
 
 fn launch_app() {
+    keychain::migrate_dpapi();
+    let backend = keychain::backend_name();
+    if backend == "none" {
+        panic!("FATAL: no supported master key backend available. Refusing to start without a real OS credential store.");
+    }
+
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             let _ = overlay::show_main(app);
