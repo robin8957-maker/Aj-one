@@ -18,10 +18,10 @@ function Login() {
             </div>
           </div>
           <h1 className="mt-8 max-w-sm font-display text-4xl leading-tight tracking-tight md:text-5xl">
-            Intelligence code editor.
+            Governed Agent OS.
           </h1>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-fg-muted">
-            Local commander. Real files. Real terminal. Agents write only after a spec. Models stay engines.
+            Local commander. Contracted agents. Isolated worktrees. Missions complete only with independent proof. Models stay engines.
           </p>
           <a
             href="/report.html"

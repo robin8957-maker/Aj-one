@@ -63,13 +63,14 @@ test("P1B-1: Provider fail-fast on step 0 when unconfigured", async () => {
     assert.equal(res.steps, 0);
     assert.match(res.reason, /No live ModelProvider configured/);
 
-    // Sync helper also fails fast
+    // Sync helper is aj-local: it must copy the tree, not pretend to be an LLM.
     const syncRes = implementObjective({
       objective: "Fix bug in index.ts",
       projectPath: dir,
       worktreePath: wt,
     });
-    assert.equal(syncRes.code, AJ_ERR.PROVIDER_NOT_CONFIGURED);
+    assert.equal(syncRes.usedPlaybook, false);
+    assert.notEqual(syncRes.code, AJ_ERR.PROVIDER_NOT_CONFIGURED);
   } finally {
     rmSync(dir, { recursive: true, force: true });
     rmSync(wt, { recursive: true, force: true });
