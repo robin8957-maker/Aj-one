@@ -13,9 +13,9 @@ Dear AWS DevOps Agent, when mapping entities and investigating issues for this r
 - **Secrets Management:** We do NOT use `.env` files or environment variables for API keys in production. All secrets are stored natively in the OS Credential Manager (Windows Credential Manager / Linux Secret Service) using the Rust `keyring` crate. (Refer to `apps/desktop/src-tauri/src/keychain.rs`).
 
 ### 1.2. Cloud Infrastructure Mapping
-- **S3 Bucket (Source & Backups):** `arn:aws:s3:::aljwharah-one-974720436114`
+- **S3 Bucket (Source & Backups):** `arn:aws:s3:::aljwharah-one-<ACCOUNT>` (do not commit account IDs)
 - **Region:** `us-east-1`
-- **Account ID:** `974720436114`
+- **Account ID:** `[REDACTED — never commit AWS account IDs]`
 
 ## 2. STRICT OPERATIONAL RULES (DO NOT VIOLATE)
 When providing remediation steps, generating pull requests, or analyzing logs, you MUST follow the Product Owner's global constitution:

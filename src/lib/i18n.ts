@@ -21,7 +21,7 @@ const EN = {
   pearlDark: "Pearl dark",
   pearlLight: "Pearl light",
   actionCenter: "Action center",
-  windowsAgent: "Intelligence Editor",
+  windowsAgent: "Governed Agent OS",
 };
 
 const AR: Record<keyof typeof EN, string> = {
@@ -45,7 +45,7 @@ const AR: Record<keyof typeof EN, string> = {
   pearlDark: "لؤلؤة داكنة",
   pearlLight: "لؤلؤة فاتحة",
   actionCenter: "مركز الإجراءات",
-  windowsAgent: "محرر الذكاء",
+  windowsAgent: "نظام تشغيل وكلاء محكوم",
 };
 
 export function t(locale: Locale, key: keyof typeof EN): string {

@@ -105,6 +105,7 @@ export function runSandboxed(req: SandboxRequest): SandboxResult {
     "--mount-proc",
     "--propagation=private",
     ...(network === "none" ? ["--net"] : []),
+    "sh",
     ENTER,
     cwd,
     network,
