@@ -1,0 +1,21 @@
+{
+  "id": "1af2ae74-cdc8-41d8-8330-a56908c26ce5",
+  "label": "pre-team 2026-08-18T12:05:18",
+  "sessionId": "vscode-chat-session://local/OGZhMjNmYjYtZGM3NS00OWUyLWE5MTYtMzk5MGRlNjljM2M3",
+  "createdAt": 1787054718889,
+  "files": [
+    {
+      "path": "package.json",
+      "bytes": 4461
+    },
+    {
+      "path": "README.md",
+      "bytes": 301
+    },
+    {
+      "path": "product.json",
+      "missing": true
+    }
+  ],
+  "kind": "workspace-files"
+}

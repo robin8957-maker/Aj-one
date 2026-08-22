@@ -1,0 +1,47 @@
+/**
+ * Fail-closed error codes. Never map these to success.
+ */
+export const AJ_ERR = {
+  CAPABILITY_UNAVAILABLE: "AJ_ERR_CAPABILITY_UNAVAILABLE",
+  RATE_LIMIT_EXCEEDED: "AJ_ERR_RATE_LIMIT_EXCEEDED",
+  SECRET_EXPOSURE: "AJ_ERR_SECRET_EXPOSURE",
+  SANDBOX_UNAVAILABLE: "SANDBOX_UNAVAILABLE",
+  SANDBOX_REQUIRED: "SANDBOX_REQUIRED",
+  REMOTE_EXECUTION_UNAVAILABLE: "REMOTE_EXECUTION_UNAVAILABLE",
+  PROVIDER_UNAVAILABLE: "AJ_ERR_PROVIDER_UNAVAILABLE",
+  PROVIDER_NOT_CONFIGURED: "PROVIDER_NOT_CONFIGURED",
+  MODEL_ID_INVALID: "MODEL_ID_INVALID",
+  MALFORMED_TOOL_CALL: "MALFORMED_TOOL_CALL",
+  STEP_LIMIT_EXCEEDED: "STEP_LIMIT_EXCEEDED",
+  TOKEN_BUDGET_EXCEEDED: "TOKEN_BUDGET_EXCEEDED",
+  COST_LIMIT_EXCEEDED: "COST_LIMIT_EXCEEDED",
+  TIMEOUT: "TIMEOUT",
+  PATCH_FAILED: "PATCH_FAILED",
+  KEYCHAIN_UNAVAILABLE: "KEYCHAIN_UNAVAILABLE",
+  PATH_DENIED: "PATH_DENIED",
+  TEST_COMMAND_NOT_ALLOWED: "TEST_COMMAND_NOT_ALLOWED",
+  POLICY_DENIED: "AJ_ERR_POLICY_DENIED",
+  CAPABILITY_EXPIRED: "AJ_ERR_CAPABILITY_EXPIRED",
+  VERIFICATION_FAILED: "AJ_ERR_VERIFICATION_FAILED",
+  REPAIR_EXHAUSTED: "MISSION_REPAIR_EXHAUSTED",
+  INSTRUCTION_INJECTION: "AJ_ERR_INSTRUCTION_INJECTION",
+} as const;
+
+export type AjErrCode = (typeof AJ_ERR)[keyof typeof AJ_ERR];
+
+export class AjError extends Error {
+  readonly code: AjErrCode;
+  constructor(code: AjErrCode, message: string) {
+    super(message);
+    this.code = code;
+    this.name = "AjError";
+  }
+}
+
+export function failClosed(code: AjErrCode, message: string): never {
+  throw new AjError(code, message);
+}
+
+export function unavailable(capability: string, reason: string): { ok: false; code: AjErrCode; reason: string } {
+  return { ok: false, code: AJ_ERR.CAPABILITY_UNAVAILABLE, reason: `${capability}: ${reason}` };
+}

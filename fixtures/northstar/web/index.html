@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Northstar console</title>
+    <style>
+      :root { color-scheme: dark; }
+      body { font: 16px/1.5 "IBM Plex Sans", sans-serif; background: #0c0c0b; color: #eeeae3; margin: 0; }
+      main { max-width: 28rem; margin: 12vh auto; padding: 1.5rem; }
+      h1 { font-weight: 500; letter-spacing: -0.03em; }
+      label { display: block; margin: 1rem 0 0.35rem; font-size: 0.85rem; color: #9a958b; }
+      input { width: 100%; min-height: 44px; border: 0; border-radius: 8px; background: #1c1b19; color: #eeeae3; padding: 0 0.85rem; box-sizing: border-box; }
+      button { margin-top: 1.25rem; min-height: 44px; padding: 0 1.1rem; border: 0; border-radius: 8px; background: #d8d2c6; color: #141413; font-weight: 500; }
+      #status { margin-top: 1rem; color: #9a958b; min-height: 1.4em; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>Operator console</p>
+      <h1>Northstar</h1>
+      <label for="user">Identity</label>
+      <input id="user" name="user" value="u_ada" />
+      <!-- INTENTIONAL DEFECT: control is disabled and has no accessible name. -->
+      <button id="login-btn" type="button" disabled>Continue</button>
+      <p id="status"></p>
+    </main>
+    <script>
+      document.getElementById("login-btn").addEventListener("click", () => {
+        document.getElementById("status").textContent = "session ready";
+      });
+    </script>
+  </body>
+</html>

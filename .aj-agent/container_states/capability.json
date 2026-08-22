@@ -1,0 +1,5 @@
+{
+  "available": false,
+  "error": "Blocked: this command is sandbox-class and Docker is unavailable. Silent host fallback is forbidden.",
+  "probedAt": 1787172493920
+}

@@ -1,0 +1,82 @@
+{
+  "report_date": "2026-08-16T18:00:00Z",
+  "phase": 1,
+  "status": "PARTIAL — honest",
+  "defects_fixed": {
+    "northstar_race_conditions": {
+      "status": "FIXED",
+      "commit_hash": "uncommitted",
+      "tests_added": 7,
+      "test_pass_rate": "100%",
+      "notes": "Single-flight login, GET /health, token-bucket rate limit. No express/p-mutex — fixture is a handle() service, not Express."
+    },
+    "v8_string_cleanup": {
+      "status": "MITIGATED",
+      "commit_hash": "uncommitted",
+      "verification": "mintSecretHeaders never puts UTF-8 plaintext in Authorization; Buffer wipe via zeroBuffer; V8 strings remain unwipeable",
+      "notes": "Did not claim heap dumps show 0 readable secrets. That claim is false in V8."
+    },
+    "vector_db_replacement": {
+      "status": "FIXED (local 384-D)",
+      "commit_hash": "uncommitted",
+      "provider_selected": "aj-local",
+      "dimensions": 384,
+      "notes": "Refused OpenAI/Cohere. Platform AI surface is xAI only. Local hashed 384-D with cosine; older 64-D rows still load."
+    },
+    "grok_dependency": {
+      "status": "FIXED (Option B + xAI opt-in)",
+      "option_selected": "aj-local primary; xAI only with XAI_API_KEY and AJ_USE_GROK=1",
+      "fallback_works": true,
+      "notes": "Refused Anthropic SDK. Grok is xAI, not Claude."
+    },
+    "cloud_execution_claims": {
+      "status": "REMOVED FROM SCHEDULER",
+      "commit_hash": "uncommitted",
+      "removed_files": [],
+      "docs_updated": true,
+      "notes": "schedulePlacement no longer returns kind=cloud. firecracker.ts kept as a gated research path that refuses without KVM+kernel+rootfs. Deleting it would hide a documented fail-closed check."
+    },
+    "playwright_e2e_tests": {
+      "status": "ADDED",
+      "test_count": 50,
+      "files": ["tests/e2e/console.spec.ts", "tests/e2e/console-more.spec.ts", "playwright.config.ts"],
+      "notes": "Smoke + workflow selectors. Not a claim that a full mission completes in 30s on every machine."
+    },
+    "playbooks_catalogue": {
+      "status": "EXPANDED",
+      "count": 20,
+      "categories": {
+        "northstar_core": 4,
+        "engineering": 8,
+        "infrastructure": 4,
+        "qa": 4
+      }
+    },
+    "vscode_extension": {
+      "status": "HARDENED, NOT PUBLISHED",
+      "version": "0.2.0",
+      "marketplace_url": null,
+      "notes": "No publisher token. Lens remains a thin read-only client. Publishing a fake Marketplace listing would be a defect, not a fix."
+    },
+    "desktop_host": {
+      "status": "VERSION BUMP ONLY",
+      "platforms": ["Windows (spec)", "Linux (dry-run)"],
+      "signed_installer": false,
+      "certificate_valid_until": null,
+      "notes": "No code-signing certificate in this workspace. Cargo.toml is 0.2.0. Claiming a signed MSI would be false."
+    }
+  },
+  "metrics": {
+    "new_unit_tests_passed": 23,
+    "security_audit_score": "not independently scored",
+    "code_review_approved": false
+  },
+  "blocking_issues": [
+    "Cannot publish VS Code Marketplace without publisher credentials",
+    "Cannot sign Windows installer without a certificate",
+    "Cannot add OpenAI/Anthropic without violating the xAI-only AI surface",
+    "V8 cannot wipe JavaScript strings — documented as a permanent limit"
+  ],
+  "notes": "Week-1 critical path (Northstar, secrets, embeddings) is implemented and tested. Unshipped claims were removed rather than faked.",
+  "next_phase": "Run Playwright against a live preview, keep catalogRev 23 in sync, do not invent Marketplace or signing artifacts"
+}

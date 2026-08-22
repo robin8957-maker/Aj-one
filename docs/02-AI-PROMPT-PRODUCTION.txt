@@ -1,0 +1,73 @@
+ROLE:
+You are an elite Brand Identity Engineer, UI/UX Architect, and Python Graphics Developer.
+
+INPUT CONTEXT:
+I have attached an image which is a **REFERENCE BRAND BOARD**. It showcases the visual identity for my product "Al-jwharah One" (الجوهرة ون) - a Governed AI Workstation. 
+The image displays a silver diamond-shaped 3D mark with circuit lines inside it, the wordmark in English and Arabic, color palettes (dark/light themes), and examples of app icons and UI elements.
+
+CRITICAL INSTRUCTION - DO NOT FAIL THIS:
+DO NOT simply take the attached image, resize the whole image, and put it in a folder. That is a lazy and unacceptable failure.
+Your task is to act as an automated production pipeline. You must use your coding capabilities (Python, PIL, OpenCV, SVG generation, etc.) to **recreate, extract, and cleanly isolate** the elements from the reference. 
+You must generate a full, production-ready, structured ZIP file containing individual, properly formatted assets, icons, SVGs, and CSS files based on this reference style.
+
+PROJECT NAME: 
+English: Al-jwharah One
+Arabic: الجوهرة ون
+Tagline (EN): Governed intelligence workstation
+Tagline (AR): محطة عمل ذكاء محكومة
+
+REQUIREMENTS:
+Write the code to generate a complete ZIP file named `aljwharah-one-brand-pack.zip`.
+The ZIP file MUST contain the exact directory structure and files listed below.
+
+1. LOGOS (`01-logo/`)
+Extract or accurately recreate the diamond mark as a clean, transparent file (SVG/PNG).
+- Mark Only (Transparent PNGs, clean alpha): 16x16, 24x24, 32x32, 48x48, 64x64, 128x128, 256x256, 512x512, 1024x1024.
+- Mark Only (SVG): 64x64, 256x256.
+- Background variations for the 512x512 mark: Transparent, On-Dark (#0A0C10), On-Light (#F4F2EC), On-Black, On-White.
+- Horizontal Lockup (Mark + Wordmark): 1280x320 PNG and SVG.
+- Bilingual Lockup (Mark + English + Arabic): 1600x600 PNG and SVG.
+
+2. FAVICON & PWA (`02-favicon-pwa/`)
+- favicon.svg
+- favicon-16.png, favicon-32.png, favicon-48.png
+- apple-touch-icon-180.png
+- icon-192.png, icon-512.png
+- maskable-512.png (Ensure the logo is within an 80% safe zone).
+
+3. DESKTOP APP ICONS (`03-desktop-tauri/`)
+- icon.ico (Multi-size ICO file containing 16, 24, 32, 48, 64, 128, 256)
+- icon.icns (For macOS, 16 through 1024)
+- tray-light.png & tray-dark.png (32x32, 64x64)
+
+4. SOCIAL MEDIA & BANNERS (`04-social/`)
+- og-default.jpg (1200x630)
+- twitter-summary.jpg (1200x630)
+- linkedin.jpg (1200x627)
+- square-share.jpg (1080x1080)
+These must be beautifully composed using the dark theme background, the logo, and the taglines.
+
+5. CSS THEME & TOKENS (`05-theme/`)
+Create a `theme.css` file containing the core CSS variables for Dark and Light modes.
+Create a `tokens.json` file.
+Theme values to use:
+- Dark: bg: #0A0C10, elevated: #141820, subtle: #1B202A, text: #F2EFE8, accent: #EADFCF, ok: #8FB392, warn: #C9AE7A, danger: #C98980
+- Light: bg: #D8DDE6, elevated: #F4F2EC, subtle: #E6E3DA, text: #15171C, accent: #1C212B
+
+6. UI ICONS & BUTTONS (`06-ui-assets/`)
+- Generate basic UI SVG icons (24x24): start, search, settings, workstation, connections, hub, radar.
+- Generate SVG abstract representations for empty states (missions, artifacts).
+
+7. AGENT AVATARS (`07-avatars-agents/`)
+- Create abstract SVG avatars (32x32, 64x64, 128x128) for different AI roles: commander, architecture-lead, backend-engineer, frontend-engineer, database-engineer, security-reviewer.
+
+8. INSTALLER ASSETS (`08-installer/`)
+- installer-welcome.bmp (164x314)
+- msi-banner.bmp (493x58)
+- msix-splash (620x300)
+
+9. VSCODE EXTENSION (`09-vscode-lens/`)
+- extension-icon-128.png, extension-icon-256.png
+
+DELIVERY INSTRUCTIONS:
+Do not ask me for further clarification. Write the comprehensive Python script to process the attached image, generate ALL the listed assets with exact dimensions, create the CSS/JSON files, compile everything into `aljwharah-one-brand-pack.zip`, and provide the final ZIP file for me to download immediately.

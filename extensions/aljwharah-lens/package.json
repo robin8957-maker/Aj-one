@@ -1,0 +1,28 @@
+{
+  "name": "aljwharah-lens",
+  "displayName": "ALJWHARAH ONE Lens",
+  "description": "Thin viewer for ALJWHARAH ONE missions and jail diffs. Governance stays in ajd.",
+  "version": "0.2.0",
+  "publisher": "aljwharah",
+  "engines": { "vscode": "^1.90.0" },
+  "categories": ["Other", "Testing"],
+  "activationEvents": ["onCommand:aljwharah.missions", "onCommand:aljwharah.openLens", "workspaceContains:.aljwharah", "onStartupFinished"],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "aljwharah.missions", "title": "ALJWHARAH: List Missions" },
+      { "command": "aljwharah.diff", "title": "ALJWHARAH: Show Jail Diff" },
+      { "command": "aljwharah.openLens", "title": "ALJWHARAH: Open Mission Lens" },
+      { "command": "aljwharah.toggleWatch", "title": "ALJWHARAH: Toggle Mission Watch" }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "aljwharahMissions",
+          "name": "ALJWHARAH Missions",
+          "when": "workspaceContains:.aljwharah"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aljwharah.one/oap/v1",
+  "title": "OAP Agent Manifest",
+  "type": "object",
+  "required": ["name", "version", "capabilities", "cannotCertify"],
+  "properties": {
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "capabilities": {
+      "type": "array",
+      "items": { "enum": ["fs.read", "fs.write", "term.exec", "net.fetch", "secret.request"] }
+    },
+    "cannotCertify": { "const": true },
+    "languages": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "288fa12f-ff14-4a07-a8bf-3798c0ddd4cb",
+  "goal": "Fix open problems with the agent team",
+  "participants": [
+    "aljwharah-planner",
+    "aljwharah-developer",
+    "aljwharah-reviewer",
+    "aljwharah-tester",
+    "aljwharah-security",
+    "aljwharah-devops"
+  ],
+  "sessionId": "vscode-chat-session://local/OGZhMjNmYjYtZGM3NS00OWUyLWE5MTYtMzk5MGRlNjljM2M3",
+  "status": "open",
+  "messages": [
+    {
+      "id": "7378f07f-1858-44fa-b87a-e5943b5e9432",
+      "agentName": "aljwharah",
+      "role": "system",
+      "content": "Goal: Fix open problems with the agent team",
+      "at": 1787054718923
+    }
+  ],
+  "createdAt": 1787054718922,
+  "updatedAt": 1787054718923
+}

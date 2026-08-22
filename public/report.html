@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>تقرير ALJWHARAH ONE الكامل</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      background: #0b0d11;
+      color: #e8e6df;
+      font-family: "IBM Plex Sans", "Segoe UI", Tahoma, sans-serif;
+    }
+    header {
+      position: sticky; top: 0; z-index: 2;
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: rgba(11,13,17,.92);
+      border-bottom: 1px solid #2a2d33;
+      backdrop-filter: blur(12px);
+    }
+    h1 { margin: 0; font-size: 16px; font-weight: 600; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    button, a.btn {
+      appearance: none; border: 0; cursor: pointer;
+      background: #d4af77; color: #14120c;
+      font-weight: 700; font-size: 14px;
+      padding: 10px 14px; border-radius: 999px;
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    button.ghost, a.ghost {
+      background: #1a1d23; color: #e8e6df; border: 1px solid #3a3e46;
+    }
+    main { padding: 12px 12px 40px; }
+    textarea {
+      width: 100%; min-height: calc(100dvh - 120px);
+      background: #12151b; color: #f3f1ea;
+      border: 1px solid #2a2d33; border-radius: 12px;
+      padding: 16px; font-size: 13px; line-height: 1.65;
+      font-family: ui-monospace, "IBM Plex Mono", Menlo, Consolas, monospace;
+      direction: rtl; white-space: pre; overflow: auto;
+    }
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #d4af77; color: #14120c; font-weight: 700;
+      padding: 10px 16px; border-radius: 999px; display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>تقرير ALJWHARAH ONE — كامل · 10 دفعات</h1>
+    <div class="actions">
+      <button type="button" id="copy">نسخ الكل دفعة واحدة</button>
+      <a class="btn ghost" id="dl" href="/ALJWHARAH-ONE-COMPLETE-REPORT.txt" download="ALJWHARAH-ONE-COMPLETE-REPORT.txt">تنزيل الملف</a>
+    </div>
+  </header>
+  <main>
+    <textarea id="box" readonly>جاري تحميل التقرير…</textarea>
+  </main>
+  <div class="toast" id="toast">تم نسخ التقرير كاملًا</div>
+  <script>
+    const box = document.getElementById("box");
+    const toast = document.getElementById("toast");
+    fetch("/ALJWHARAH-ONE-COMPLETE-REPORT.txt")
+      .then((r) => r.text())
+      .then((t) => { box.value = t; })
+      .catch(() => { box.value = "تعذّر التحميل. استخدم زر التنزيل."; });
+    document.getElementById("copy").onclick = async () => {
+      box.focus(); box.select();
+      try {
+        await navigator.clipboard.writeText(box.value);
+      } catch {
+        document.execCommand("copy");
+      }
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 1800);
+    };
+  </script>
+</body>
+</html>
